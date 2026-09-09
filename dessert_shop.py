@@ -27,7 +27,7 @@ def get_price(order):
 
 def receipt():
     print("Thanks for buying! Here's your receipt:")
-    print("~YOUR ORDER~")
+    print("~YOUR RECEIPT~")
     for order in orders:
         item_total = order[1] * get_price(order[0])
         print(f"{order[1]} x {order[0]} = £{item_total:.2f}")
@@ -59,8 +59,34 @@ def place_order():
 def show_menu():
     print("~~MENU~~")
     for number,food in enumerate(foods, 1):
-        print(f"{number}.{food} : £{get_price(food):.2f}")
+        print(f"{number}. {food} : £{get_price(food):.2f}")
     print("~~~~~")
+
+def show_order():
+    print("~~YOUR ORDER~~")
+    for number, order in enumerate(orders, 1):
+        print(f"{number}. {order[1]} x {order[0]}")
+
+def remove_order():
+    print("~~REMOVE ORDER~~")
+    remove = input("Would you like to remove an item? (yes/no): ").lower().strip()
+    while remove!="yes" and remove!="no":
+        print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
+        remove = input("Would you like to remove an item? (yes/no): ").lower().strip()
+    if remove == "yes":
+        while True:
+            try:
+                choice = int(input("Please enter the number of the order you'd like to remove: "))
+                while choice < 1 or choice > len(orders):
+                    choice = int(input("Oops! Please choose a number that is on your order list: "))
+                choice = choice - 1
+                removed = orders.pop(choice)
+                removed_total = get_price(removed[0]) * removed[1]
+                print(f"Done! {removed[1]} x {removed[0]} has been removed.")
+                return removed_total
+            except ValueError:
+                print("Oops! Please enter a number: ")
+    return 0
 
 greet(name)
 show_menu()
@@ -72,5 +98,6 @@ while again == "yes":
     while again!="yes" and again!="no":
         print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
         again = input("Would you like to place another order? (yes/no): ").lower().strip()
-
+show_order()
+grand_total -= remove_order()
 receipt()
