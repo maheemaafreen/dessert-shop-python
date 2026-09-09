@@ -8,23 +8,29 @@ name = input("Hi, what's your name? : ")
 # FUNCTIONS
 def calc_total(price, quan):
     return price * quan
+
 def greet(name):
     print(f"Hello, {name}! Welcome to the dessert shop!")
+
 def get_quantity():
     quan = int(input("How many would you like? : "))
     while quan <= 0:
         quan = int(input("Sorry, that's not a valid quantity! What quantity would you like? : "))
     return quan
+
 def get_price(order):
     return prices[order]
+
 def receipt():
     print("Thanks for buying! Here's your receipt:")
     print("~YOUR ORDER~")
     for order in orders:
-        print(f"{order[1]} x {order[0]}")
+        item_total = order[1] * get_price(order[0])
+        print(f"{order[1]} x {order[0]} = £{item_total}")
     print(f"GRAND TOTAL: £{grand_total}")
+
 def place_order():
-    order = input("What dessert would you like?")
+    order = input("What dessert would you like?").lower()
     if order in foods:
         print("Perfect, will do!")
         quan = get_quantity()
@@ -36,7 +42,7 @@ def place_order():
     else:
         print("Sorry! We don't have that!")
         return 0
-#
+
 
 greet(name)
 while again == "yes":
