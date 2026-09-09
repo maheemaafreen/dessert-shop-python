@@ -26,14 +26,14 @@ def receipt():
     print("~YOUR ORDER~")
     for order in orders:
         item_total = order[1] * get_price(order[0])
-        print(f"{order[1]} x {order[0]} = £{item_total}")
+        print(f"{order[1]} x {order[0]} = £{item_total:.2f}")
     original_total = grand_total
     final_total = original_total
     if grand_total >= 10:
         final_total = grand_total * 0.9
         discount = original_total - final_total
-        print(f"10% DISCOUNT: -£{discount}")
-    print(f"FINAL TOTAL: £{final_total}")
+        print(f"10% DISCOUNT: -£{discount:.2f}")
+    print(f"FINAL TOTAL: £{final_total:.2f}")
 
 def place_order():
     order = input("What dessert would you like? ").lower()
@@ -43,17 +43,26 @@ def place_order():
         orders.append([order, quan])
         price = get_price(order)
         total = calc_total(price, quan)
-        print("Coming up! Your total is £", total)
+        print(f"Coming up! Your total is £{total:.2f}")
         return total
     else:
         print("Sorry! We don't have that!")
         return 0
 
+def show_menu():
+    print("~~MENU~~")
+    for food in foods:
+        print(f"{food} : £{get_price(food):.2f}")
+    print("~~~~~")
 
 greet(name)
+show_menu()
 while again == "yes":
     total = place_order()
     grand_total += total
-    again = input("Would you like to place another order? (yes/no): ")
+    again = input("Would you like to place another order? (yes/no): ").lower()
+    while again!="yes" and again!="no":
+        print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
+        again = input("Would you like to place another order? (yes/no): ").lower()
 
 receipt()
