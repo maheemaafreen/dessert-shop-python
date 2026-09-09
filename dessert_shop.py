@@ -3,7 +3,7 @@ prices = {"ice cream":2, "chocolate":1, "brownies": 3, "cookies" : 2, "cake" :5}
 again = "yes"
 grand_total = 0
 orders = []
-name = input("Hi, what's your name? : ")
+name = input("Hi, what's your name? : ").strip()
 
 # FUNCTIONS
 def calc_total(price, quan):
@@ -40,23 +40,26 @@ def receipt():
     print(f"FINAL TOTAL: £{final_total:.2f}")
 
 def place_order():
-    order = input("What dessert would you like? ").lower()
-    if order in foods:
-        print("Perfect, will do!")
-        quan = get_quantity()
-        orders.append([order, quan])
-        price = get_price(order)
-        total = calc_total(price, quan)
-        print(f"Coming up! Your total is £{total:.2f}")
-        return total
-    else:
-        print("Sorry! We don't have that!")
-        return 0
+    while True:
+        try:
+            order = int(input("What dessert would you like? "))
+            while order < 1 or order > 5:
+                order = int(input("Oops! Please enter a number between 1-5 : "))
+            order = foods[order-1]
+            print(f"Perfect, {order}!")
+            quan = get_quantity()
+            orders.append([order, quan])
+            price = get_price(order)
+            total = calc_total(price, quan)
+            print(f"Coming up! That'll be £{total:.2f}")
+            return total
+        except ValueError:
+            print("Oops! Please enter a number: ")
 
 def show_menu():
     print("~~MENU~~")
-    for food in foods:
-        print(f"{food} : £{get_price(food):.2f}")
+    for number,food in enumerate(foods, 1):
+        print(f"{number}.{food} : £{get_price(food):.2f}")
     print("~~~~~")
 
 greet(name)
@@ -64,9 +67,10 @@ show_menu()
 while again == "yes":
     total = place_order()
     grand_total += total
-    again = input("Would you like to place another order? (yes/no): ").lower()
+    print(f"Current total: £{grand_total:.2f}")
+    again = input("Would you like to place another order? (yes/no): ").lower().strip()
     while again!="yes" and again!="no":
         print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
-        again = input("Would you like to place another order? (yes/no): ").lower()
+        again = input("Would you like to place another order? (yes/no): ").lower().strip()
 
 receipt()
