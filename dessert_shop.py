@@ -42,7 +42,7 @@ def receipt():
 def place_order():
     while True:
         try:
-            order = int(input("What dessert would you like? "))
+            order = int(input("What dessert would you like? (Enter its number): "))
             while order < 1 or order > 5:
                 order = int(input("Oops! Please enter a number between 1-5 : "))
             order = foods[order-1]
@@ -73,20 +73,62 @@ def remove_order():
     while remove!="yes" and remove!="no":
         print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
         remove = input("Would you like to remove an item? (yes/no): ").lower().strip()
+    removed_total = 0
     if remove == "yes":
-        while True:
-            try:
-                choice = int(input("Please enter the number of the order you'd like to remove: "))
-                while choice < 1 or choice > len(orders):
-                    choice = int(input("Oops! Please choose a number that is on your order list: "))
-                choice = choice - 1
-                removed = orders.pop(choice)
-                removed_total = get_price(removed[0]) * removed[1]
-                print(f"Done! {removed[1]} x {removed[0]} has been removed.")
-                return removed_total
-            except ValueError:
-                print("Oops! Please enter a number: ")
+        remove_again = "yes"
+        while remove_again == "yes":
+            while True:
+                try:
+                    choice = int(input("Please enter the number of the order you'd like to remove: "))
+                    while choice < 1 or choice > len(orders):
+                        choice = int(input("Oops! Please choose a number that is on your order list: "))
+                    choice = choice - 1
+                    removed = orders.pop(choice)
+                    removed_total += get_price(removed[0]) * removed[1]
+                    print(f"Done! {removed[1]} x {removed[0]} has been removed.")
+                    show_order()
+                    remove_again = input("Would you like to remove another order? (yes/no): ").lower().strip()
+                    while remove_again != "yes" and remove_again != "no":
+                        remove_again = input("Sorry, I didn't get that! Please enter 'yes' or 'no': ")
+                    break
+                except ValueError:
+                    print("Oops! Please enter a number: ")
+        return removed_total
     return 0
+
+def change_quantity():
+    print("~~CHANGE QUANTITY~~")
+    change = input("Would you like to change the quantity of an item? (yes/no): ").lower().strip()
+    while change != "yes" and change != "no":
+        print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
+        change = input("Would you like to change the quantity of an item? (yes/no): ").lower().strip()
+    total_change = 0
+    if change == "yes":
+        change_again = "yes"
+        while change_again == "yes":
+            while True:
+                try:
+                    choice2 = int(input("Please enter the number of the order you wish to edit: "))
+                    while choice2 < 1 or choice2 > len(orders):
+                        choice2 = int(input("Oops! Please choose a number that is on your order list: "))
+                    choice2 = choice2 - 1
+                    new_quantity = get_quantity()
+                    old_quantity = orders[choice2][1]
+                    old_total = get_price(orders[choice2][0]) * old_quantity
+                    orders[choice2][1] = new_quantity
+                    new_total = get_price(orders[choice2][0]) * new_quantity
+                    change_in_total = new_total - old_total
+                    total_change += change_in_total
+                    show_order()
+                    change_again = input("Would you like to change the quantity of another item? (yes/no): ").lower().strip()
+                    while change_again != "yes" and change_again != "no":
+                        change_again = input("Sorry, I didn't get that! Please enter 'yes' or 'no': ")
+                    break
+                except ValueError:
+                    print("Oops! Please enter a number: ")
+        return total_change
+    return 0
+
 
 greet(name)
 show_menu()
@@ -100,4 +142,5 @@ while again == "yes":
         again = input("Would you like to place another order? (yes/no): ").lower().strip()
 show_order()
 grand_total -= remove_order()
+grand_total += change_quantity()
 receipt()
