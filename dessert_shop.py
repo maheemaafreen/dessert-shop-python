@@ -13,10 +13,14 @@ def greet(name):
     print(f"Hello, {name}! Welcome to the dessert shop!")
 
 def get_quantity():
-    quan = int(input("How many would you like? : "))
-    while quan <= 0:
-        quan = int(input("Sorry, that's not a valid quantity! What quantity would you like? : "))
-    return quan
+    while True:
+        try:
+            quan = int(input("How many would you like? : "))
+            while quan <= 0:
+                quan = int(input("Sorry, that's not a valid quantity! What quantity would you like? : "))
+            return quan
+        except ValueError:
+            print("Oops! Please enter a number: ")
 
 def get_price(order):
     return prices[order]
