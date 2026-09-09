@@ -27,10 +27,16 @@ def receipt():
     for order in orders:
         item_total = order[1] * get_price(order[0])
         print(f"{order[1]} x {order[0]} = £{item_total}")
-    print(f"GRAND TOTAL: £{grand_total}")
+    original_total = grand_total
+    final_total = original_total
+    if grand_total >= 10:
+        final_total = grand_total * 0.9
+        discount = original_total - final_total
+        print(f"10% DISCOUNT: -£{discount}")
+    print(f"FINAL TOTAL: £{final_total}")
 
 def place_order():
-    order = input("What dessert would you like?").lower()
+    order = input("What dessert would you like? ").lower()
     if order in foods:
         print("Perfect, will do!")
         quan = get_quantity()
