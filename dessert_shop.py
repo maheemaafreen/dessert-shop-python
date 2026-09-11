@@ -1,14 +1,24 @@
-foods = ["ice cream", "chocolate", "brownies", "cookies", "cake"]
-prices = {"ice cream":2, "chocolate":1, "brownies": 3, "cookies" : 2, "cake" :5}
+class Dessert:
+    def __init__(self, name, price, category):
+        self.name = name
+        self.price = price
+        self.category = category
+    def calculate_total(self, quantity):
+        return self.price * quantity
+
+ice_cream = Dessert("Ice Cream", 2, "frozen")
+chocolate = Dessert("Chocolate", 1, "candy")
+brownies = Dessert("Brownies", 3, "baked")
+cookies = Dessert("Cookies", 2, "baked")
+cake = Dessert("Cake", 5, "baked")
+desserts = [ice_cream, chocolate, brownies, cookies, cake]
+
 again = "yes"
 grand_total = 0
 orders = []
 name = input("Hi, what's your name? : ").strip()
 
 # FUNCTIONS
-def calc_total(price, quan):
-    return price * quan
-
 def greet(name):
     print(f"Hello, {name}! Welcome to the dessert shop!")
 
@@ -20,17 +30,14 @@ def get_quantity():
                 quan = int(input("Sorry, that's not a valid quantity! What quantity would you like? : "))
             return quan
         except ValueError:
-            print("Oops! Please enter a number: ")
-
-def get_price(order):
-    return prices[order]
+            print("Oops! Please enter a number.")
 
 def receipt():
     print("Thanks for buying! Here's your receipt:")
     print("~YOUR RECEIPT~")
     for order in orders:
-        item_total = order[1] * get_price(order[0])
-        print(f"{order[1]} x {order[0]} = £{item_total:.2f}")
+        item_total = order[1] * order[0].price
+        print(f"{order[1]} x {order[0].name.lower()} = £{item_total:.2f}")
     original_total = grand_total
     final_total = original_total
     if grand_total >= 10:
@@ -45,27 +52,26 @@ def place_order():
             order = int(input("What dessert would you like? (Enter its number): "))
             while order < 1 or order > 5:
                 order = int(input("Oops! Please enter a number between 1-5 : "))
-            order = foods[order-1]
-            print(f"Perfect, {order}!")
+            order = desserts[order-1]
+            print(f"Perfect, {order.name.lower()}!")
             quan = get_quantity()
             orders.append([order, quan])
-            price = get_price(order)
-            total = calc_total(price, quan)
+            total = order.calculate_total(quan)
             print(f"Coming up! That'll be £{total:.2f}")
             return total
         except ValueError:
-            print("Oops! Please enter a number: ")
+            print("Oops! Please enter a number.")
 
 def show_menu():
     print("~~MENU~~")
-    for number,food in enumerate(foods, 1):
-        print(f"{number}. {food} : £{get_price(food):.2f}")
+    for number, dessert in enumerate(desserts, 1):
+        print(f"{number}. {dessert.name} ({dessert.category}): £{dessert.price:.2f}")
     print("~~~~~")
 
 def show_order():
     print("~~YOUR ORDER~~")
     for number, order in enumerate(orders, 1):
-        print(f"{number}. {order[1]} x {order[0]}")
+        print(f"{number}. {order[1]} x {order[0].name}")
 
 def remove_order():
     print("~~REMOVE ORDER~~")
@@ -84,15 +90,15 @@ def remove_order():
                         choice = int(input("Oops! Please choose a number that is on your order list: "))
                     choice = choice - 1
                     removed = orders.pop(choice)
-                    removed_total += get_price(removed[0]) * removed[1]
-                    print(f"Done! {removed[1]} x {removed[0]} has been removed.")
+                    removed_total += removed[0].price * removed[1]
+                    print(f"Done! {removed[1]} x {removed[0].name} has been removed.")
                     show_order()
                     remove_again = input("Would you like to remove another order? (yes/no): ").lower().strip()
                     while remove_again != "yes" and remove_again != "no":
                         remove_again = input("Sorry, I didn't get that! Please enter 'yes' or 'no': ")
                     break
                 except ValueError:
-                    print("Oops! Please enter a number: ")
+                    print("Oops! Please enter a number.")
         return removed_total
     return 0
 
@@ -114,9 +120,9 @@ def change_quantity():
                     choice2 = choice2 - 1
                     new_quantity = get_quantity()
                     old_quantity = orders[choice2][1]
-                    old_total = get_price(orders[choice2][0]) * old_quantity
+                    old_total = orders[choice2][0].price * old_quantity
                     orders[choice2][1] = new_quantity
-                    new_total = get_price(orders[choice2][0]) * new_quantity
+                    new_total = orders[choice2][0].price * new_quantity
                     change_in_total = new_total - old_total
                     total_change += change_in_total
                     show_order()
@@ -125,7 +131,7 @@ def change_quantity():
                         change_again = input("Sorry, I didn't get that! Please enter 'yes' or 'no': ")
                     break
                 except ValueError:
-                    print("Oops! Please enter a number: ")
+                    print("Oops! Please enter a number.")
         return total_change
     return 0
 
