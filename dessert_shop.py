@@ -16,7 +16,7 @@ desserts = [ice_cream, chocolate, brownies, cookies, cake]
 again = "yes"
 grand_total = 0
 orders = []
-name = input("Hi, what's your name? : ").strip()
+password = "Maheema2607"
 
 # FUNCTIONS
 def greet(name):
@@ -135,18 +135,95 @@ def change_quantity():
         return total_change
     return 0
 
+def intro():
+    while True:
+        ppl = input("Hello! Are you a customer, or the owner? ").lower().strip()
+        if ppl == "owner" or ppl == "customer":
+            return ppl
+        else:
+            print("Oops! Please enter either 'customer' or 'owner'!")
 
-greet(name)
-show_menu()
-while again == "yes":
-    total = place_order()
-    grand_total += total
-    print(f"Current total: £{grand_total:.2f}")
-    again = input("Would you like to place another order? (yes/no): ").lower().strip()
-    while again!="yes" and again!="no":
-        print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
+def owner_login():
+    while True:
+        passw = input("Please enter your password: ")
+        if passw == "Maheema2607":
+            return True
+        else:
+            print("Incorrect password.")
+
+def sales_analysis():
+    with open("../src/sales.txt", "r") as file:
+        content = file.read().splitlines()
+        revenue_by_dessert = {}
+        quantity_by_dessert = {}
+        highest_revenue = 0
+        best_dessert = ""
+        highest_quantity = 0
+        most_sold = ""
+        total_revenue = 0
+        total_units = 0
+
+        for sale in content:
+            parts = sale.split(",")
+            dessert = parts[0]
+            quantity = int(parts[1])
+            revenue = float(parts[2])
+            if dessert not in revenue_by_dessert:
+                revenue_by_dessert[dessert] = 0
+            revenue_by_dessert[dessert] += revenue
+            if dessert not in quantity_by_dessert:
+                quantity_by_dessert[dessert] = 0
+            quantity_by_dessert[dessert] += quantity
+
+        for dessert, revenue in revenue_by_dessert.items():
+            if revenue > highest_revenue:
+                highest_revenue = revenue
+                best_dessert = dessert
+
+        for dessert, quantity in quantity_by_dessert.items():
+            if quantity > highest_quantity:
+                highest_quantity = quantity
+                most_sold = dessert
+
+        for dessert, revenue in revenue_by_dessert.items():
+            total_revenue += revenue
+        for dessert, quantity in quantity_by_dessert.items():
+            total_units += quantity
+
+        print(revenue_by_dessert)
+        print(f"The bestseller is {best_dessert.lower()}, with £{highest_revenue:.2f} total revenue!")
+        print(f"The most sold dessert is {most_sold.lower()}, with {highest_quantity} units sold!")
+        print(f"Total revenue: £{total_revenue:.2f}.")
+        print(f"Total units sold: {total_units} units.")
+
+def save_sales():
+    with open("../src/sales.txt", "a") as file:
+        for order in orders:
+            total = order[0].calculate_total(order[1])
+            file.write(f"{order[0].name}, {order[1]}, {total:.2f}\n")
+
+
+ppl = intro()
+if ppl == "owner":
+    print("Welcome, owner!")
+    logged_in = owner_login()
+    if logged_in:
+        print("Access granted!")
+        sales_analysis()
+else:
+    name = input("What's your name?: ").strip()
+    greet(name)
+    show_menu()
+    while again == "yes":
+        total = place_order()
+        grand_total += total
+        print(f"Current total: £{grand_total:.2f}")
         again = input("Would you like to place another order? (yes/no): ").lower().strip()
-show_order()
-grand_total -= remove_order()
-grand_total += change_quantity()
-receipt()
+        while again!="yes" and again!="no":
+            print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
+            again = input("Would you like to place another order? (yes/no): ").lower().strip()
+    show_order()
+    grand_total -= remove_order()
+    grand_total += change_quantity()
+    save_sales()
+    receipt()
