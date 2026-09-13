@@ -1,7 +1,7 @@
 def show_menu(desserts):
     print("~~MENU~~")
     for number, dessert in enumerate(desserts, 1):
-        print(f"{number}. {dessert.name} ({dessert.category}): £{dessert.price:.2f}")
+        print(f"{number}. {dessert.name} ({dessert.category}): £{dessert.price:.2f} ~ Stock remaining: {dessert.stock}")
     print("~~~~~")
 
 def get_yes_no(prompt):
@@ -18,8 +18,15 @@ def place_order(desserts, orders):
             while order < 1 or order > 5:
                 order = int(input("Oops! Please enter a number between 1-5 : "))
             order = desserts[order-1]
+            if order.stock == 0:
+                print(f"Sorry! {order.name} is sold out :( Please choose another dessert.")
+                continue
             print(f"Perfect, {order.name.lower()}!")
             quan = get_quantity()
+            while quan > order.stock:
+                print(f"Sorry! We only have {order.stock} left.")
+                quan = get_quantity()
+            order.stock -= quan
             orders.append([order, quan])
             total = order.calculate_total(quan)
             print(f"Coming up! That'll be £{total:.2f}")
@@ -44,7 +51,7 @@ def show_order(orders):
 
 def remove_order(orders):
     print("~~REMOVE ORDER~~")
-    remove = input("Would you like to remove an item? (yes/no): ").lower().strip()
+    remove = get_yes_no("Would you like to remove an item? (yes/no): ")
     while remove!="yes" and remove!="no":
         print("Sorry, I didn't get that! Please enter 'yes' or 'no'")
         remove = get_yes_no("Would you like to remove an item? (yes/no): ")
@@ -59,6 +66,7 @@ def remove_order(orders):
                         choice = int(input("Oops! Please choose a number that is on your order list: "))
                     choice = choice - 1
                     removed = orders.pop(choice)
+                    removed[0].stock += removed[1]
                     removed_total += removed[0].price * removed[1]
                     print(f"Done! {removed[1]} x {removed[0].name} has been removed.")
                     show_order(orders)
@@ -82,11 +90,21 @@ def change_quantity(orders):
                     while choice2 < 1 or choice2 > len(orders):
                         choice2 = int(input("Oops! Please choose a number that is on your order list: "))
                     choice2 = choice2 - 1
-                    new_quantity = get_quantity()
+                    dessert = orders[choice2][0]
                     old_quantity = orders[choice2][1]
-                    old_total = orders[choice2][0].price * old_quantity
+                    new_quantity = get_quantity()
+                    quan_difference = new_quantity - old_quantity
+                    if quan_difference > 0:
+                        while quan_difference > dessert.stock:
+                            print(f"Sorry! We only have {dessert.stock + old_quantity} of those available.")
+                            new_quantity = get_quantity()
+                            quan_difference = new_quantity - old_quantity
+                            dessert.stock -= quan_difference
+                    else:
+                        dessert.stock += abs(quan_difference)
                     orders[choice2][1] = new_quantity
-                    new_total = orders[choice2][0].price * new_quantity
+                    old_total = dessert.price * old_quantity
+                    new_total = dessert.price * new_quantity
                     change_in_total = new_total - old_total
                     total_change += change_in_total
                     show_order(orders)

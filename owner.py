@@ -46,13 +46,12 @@ def sales_analysis():
                 highest_quantity = quantity
                 most_sold = dessert
 
-        for dessert, revenue in revenue_by_dessert.items():
-            total_revenue += revenue
-
-        for dessert, quantity in quantity_by_dessert.items():
-            total_units += quantity
-
-        average_revenue = total_revenue / total_units
+        total_revenue = sum(revenue_by_dessert.values())
+        total_units = sum(quantity_by_dessert.values())
+        if total_units > 0:
+            average_revenue = total_revenue / total_units
+        else:
+            average_revenue = 0
 
         print("\n~~ SALES DASHBOARD ~~")
         for dessert, revenue in revenue_by_dessert.items():
@@ -65,3 +64,25 @@ def sales_analysis():
             percentage = (revenue / total_revenue) * 100
             print(f"~>{dessert}: {percentage:.1f}% of total revenue.")
         print(f"Total units sold: {total_units} units.")
+
+def show_inventory(desserts):
+    print("~~ INVENTORY ~~")
+    for dessert in desserts:
+        if dessert.stock <= 5:
+            print(f"{dessert.name}: {dessert.stock} in stock ⚠️LOW IN STOCK!")
+        else:
+            print(f"{dessert.name}: {dessert.stock} in stock.")
+    print("~~~~~~~~~~~~~~~")
+
+def save_inventory(desserts):
+    with open("../src/inventory.txt", "w") as file:
+        for dessert in desserts:
+            file.write(f"{dessert.name}, {dessert.stock}\n")
+
+def load_inventory(desserts):
+    with open("../src/inventory.txt", "r") as file:
+        for line in file:
+            name, stock = line.strip().split(",")
+            for dessert in desserts:
+                if dessert.name == name:
+                    dessert.stock = int(stock)

@@ -1,18 +1,18 @@
 from models import Dessert
 from order import show_menu, get_yes_no, place_order, show_order, remove_order, change_quantity, receipt
-from owner import save_sales, owner_login, sales_analysis
+from owner import save_sales, owner_login, sales_analysis, show_inventory, save_inventory, load_inventory
 
-ice_cream = Dessert("Ice Cream", 2, "frozen")
-chocolate = Dessert("Chocolate", 1, "candy")
-brownies = Dessert("Brownies", 3, "baked")
-cookies = Dessert("Cookies", 2, "baked")
-cake = Dessert("Cake", 5, "baked")
+ice_cream = Dessert("Ice Cream", 2, "frozen", 50)
+chocolate = Dessert("Chocolate", 1, "candy", 50)
+brownies = Dessert("Brownies", 3, "baked", 50)
+cookies = Dessert("Cookies", 2, "baked", 50)
+cake = Dessert("Cake", 5, "baked", 50)
 desserts = [ice_cream, chocolate, brownies, cookies, cake]
+load_inventory(desserts)
 
-again = "yes"
 grand_total = 0
 orders = []
-password = "Maheema2607"
+password = "test123" #Demo password
 
 # FUNCTIONS
 def greet(name):
@@ -33,10 +33,12 @@ if ppl == "owner":
     if logged_in:
         print("Access granted!")
         sales_analysis()
+        show_inventory(desserts)
 else:
     name = input("What's your name?: ").strip()
     greet(name)
     show_menu(desserts)
+    again = "yes"
     while again == "yes":
         total = place_order(desserts, orders)
         grand_total += total
@@ -46,4 +48,5 @@ else:
     grand_total -= remove_order(orders)
     grand_total += change_quantity(orders)
     save_sales(orders)
+    save_inventory(desserts)
     receipt(grand_total, orders)
